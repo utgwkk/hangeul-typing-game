@@ -1,0 +1,55 @@
+{
+  "language": {
+    "ja": "일본어",
+    "ko": "한국어"
+  },
+  "menu": {
+    "title": "한글 타이핑 게임",
+    "selectMode": "모드를 선택하세요",
+    "start": "시작",
+    "selectLanguage": "언어"
+  },
+  "mode": {
+    "syllable": "글자",
+    "syllableDesc": "글자 하나씩 연습",
+    "word": "단어",
+    "wordDesc": "기본 어휘 연습",
+    "sentence": "문장",
+    "sentenceDesc": "짧은 문장 연습"
+  },
+  "game": {
+    "prompt": "문제",
+    "input": "입력",
+    "paused": "일시정지",
+    "timeUp": "시간 초과"
+  },
+  "stats": {
+    "cpm": "타/분",
+    "wpm": "WPM",
+    "accuracy": "정확도",
+    "score": "점수",
+    "combo": "콤보",
+    "time": "남은 시간",
+    "elapsed": "경과 시간"
+  },
+  "result": {
+    "title": "결과",
+    "cpm": "타/분",
+    "wpm": "WPM",
+    "accuracy": "정확도",
+    "score": "점수",
+    "maxCombo": "최대 콤보",
+    "retry": "다시 도전",
+    "backToMenu": "메뉴로 돌아가기"
+  },
+  "keyboard": {
+    "shiftHint": "Shift 키를 누르면 쌍자음/ㅒㅖ가 표시됩니다"
+  },
+  "word": {
+    "meaning": "의미",
+    "reading": "읽기"
+  },
+  "error": {
+    "imeWarning": "IME를 꺼 주세요"
+  }
+}
