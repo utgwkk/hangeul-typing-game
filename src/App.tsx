@@ -4,12 +4,15 @@ import type { Language } from './i18n'
 
 function App() {
   const { t, i18n } = useTranslation()
-  const [language, setLanguage] = useState<Language>('ja')
+  const [language, setLanguage] = useState<Language>(i18n.language as Language)
 
   const toggleLanguage = () => {
     const next: Language = language === 'ja' ? 'ko' : 'ja'
     setLanguage(next)
     i18n.changeLanguage(next)
+    const url = new URL(window.location.href)
+    url.searchParams.set('lang', next)
+    window.history.replaceState(null, '', url)
   }
 
   return (
