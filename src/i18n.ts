@@ -6,14 +6,21 @@ import ko from './locales/ko.json'
 
 export type Language = 'ja' | 'ko'
 
+export const SUPPORTED_LANGUAGES: Language[] = ['ja', 'ko']
 export const DEFAULT_LANGUAGE: Language = 'ja'
+
+function getInitialLanguage(): Language {
+  const param = new URLSearchParams(window.location.search).get('lang')
+  if (param === 'ja' || param === 'ko') return param
+  return DEFAULT_LANGUAGE
+}
 
 i18n.use(initReactI18next).init({
   resources: {
     ja: { translation: ja },
     ko: { translation: ko },
   },
-  lng: DEFAULT_LANGUAGE,
+  lng: getInitialLanguage(),
   fallbackLng: DEFAULT_LANGUAGE,
   interpolation: {
     escapeValue: false,
