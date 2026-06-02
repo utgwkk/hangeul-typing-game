@@ -1,0 +1,55 @@
+{
+  "language": {
+    "ja": "日本語",
+    "ko": "한국어"
+  },
+  "menu": {
+    "title": "ハングルタイピングゲーム",
+    "selectMode": "モードを選択",
+    "start": "開始",
+    "selectLanguage": "言語"
+  },
+  "mode": {
+    "syllable": "音節",
+    "syllableDesc": "1音節ずつ練習",
+    "word": "単語",
+    "wordDesc": "基本語彙を練習",
+    "sentence": "文章",
+    "sentenceDesc": "例文を練習"
+  },
+  "game": {
+    "prompt": "お題",
+    "input": "入力",
+    "paused": "一時停止中",
+    "timeUp": "時間切れ"
+  },
+  "stats": {
+    "cpm": "打/分",
+    "wpm": "WPM",
+    "accuracy": "正確度",
+    "score": "スコア",
+    "combo": "コンボ",
+    "time": "残り時間",
+    "elapsed": "経過時間"
+  },
+  "result": {
+    "title": "結果",
+    "cpm": "打/分",
+    "wpm": "WPM",
+    "accuracy": "正確度",
+    "score": "スコア",
+    "maxCombo": "最大コンボ",
+    "retry": "再挑戦",
+    "backToMenu": "メニューへ戻る"
+  },
+  "keyboard": {
+    "shiftHint": "Shiftキーを押すと双子音/ㅒㅖが表示されます"
+  },
+  "word": {
+    "meaning": "意味",
+    "reading": "読み"
+  },
+  "error": {
+    "imeWarning": "IMEをオフにしてください"
+  }
+}
