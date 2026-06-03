@@ -130,6 +130,10 @@ export function useGameEngine(): UseGameEngineReturn {
           return { ...prev, automaton: automatonBackspace(prev.automaton) }
         }
 
+        if (hasWrongInput(prompt.text, prev.automaton.committed)) {
+          return prev
+        }
+
         let newAutomaton: AutomatonState
         if (isSpace || isOtherLiteral) {
           newAutomaton = inputLiteral(prev.automaton, e.key)
