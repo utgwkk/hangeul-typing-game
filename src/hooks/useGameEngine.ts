@@ -153,8 +153,9 @@ export function useGameEngine(): UseGameEngineReturn {
         if (isQuestionComplete(prompt.text, newCommitted, newComposing)) {
           const committed = automatonCommit(newAutomaton)
           const snapshot = computeStats(newStats)
-          newScore = recordCorrect(newScore, snapshot.cpm)
-          newStats = recordSyllable(newStats, Array.from(prompt.text).length)
+          const syllableCount = Array.from(prompt.text).length
+          newScore = recordCorrect(newScore, snapshot.cpm, syllableCount)
+          newStats = recordSyllable(newStats, syllableCount)
           const newEngine = advanceQuestion(prev.engine)
 
           const nextPhase: GamePhase = newEngine.finished ? 'finished' : 'playing'

@@ -20,9 +20,19 @@ describe('comboMultiplier', () => {
     expect(comboMultiplier(9)).toBe(1.5);
   });
 
-  it('returns 2.0 for combo >= 10', () => {
+  it('returns 2.0 for combo 10–19', () => {
     expect(comboMultiplier(10)).toBe(2.0);
-    expect(comboMultiplier(99)).toBe(2.0);
+    expect(comboMultiplier(19)).toBe(2.0);
+  });
+
+  it('returns 2.5 for combo 20–29', () => {
+    expect(comboMultiplier(20)).toBe(2.5);
+    expect(comboMultiplier(29)).toBe(2.5);
+  });
+
+  it('returns 3.0 for combo >= 30', () => {
+    expect(comboMultiplier(30)).toBe(3.0);
+    expect(comboMultiplier(99)).toBe(3.0);
   });
 });
 
@@ -93,11 +103,24 @@ describe('recordCorrect', () => {
     for (let i = 0; i < 9; i++) s = recordCorrect(s, 0);
     s = recordCorrect(s, 0); // combo 10 → 2.0x → 20
     expect(s.combo).toBe(10);
-    // sum: 4×10 + 5×15 + 20 = 40+75+20 = 135... let me recalc
-    // combo 1-4 → 10 each (4×10=40)
-    // combo 5-9 → 15 each (5×15=75)
-    // combo 10  → 20
+    // combo 1-4  → 10 each (4×10=40)
+    // combo 5-9  → 15 each (5×15=75)
+    // combo 10   → 20
     expect(s.score).toBe(40 + 75 + 20);
+  });
+
+  it('scales points by syllableCount', () => {
+    let s = createScore();
+    s = recordCorrect(s, 0, 3); // combo 1, 1.0x, 3 syllables → 30
+    expect(s.score).toBe(30);
+  });
+
+  it('combines syllableCount and combo multiplier', () => {
+    let s = createScore();
+    for (let i = 0; i < 4; i++) s = recordCorrect(s, 0, 1);
+    s = recordCorrect(s, 0, 4); // combo 5, 1.5x, 4 syllables → round(10*4*1.5)=60
+    expect(s.combo).toBe(5);
+    expect(s.score).toBe(40 + 60);
   });
 
   it('updates maxCombo', () => {
