@@ -50,13 +50,13 @@ export const MODES: Readonly<Record<ModeId, ModeConfig>> = {
     id: 'word',
     prompts: WORD_PROMPTS,
     selection: 'random',
-    progress: { type: 'questionCount', count: 20 },
+    progress: { type: 'timeLimit', seconds: 60 },
   },
   sentence: {
     id: 'sentence',
     prompts: SENTENCE_PROMPTS,
-    selection: 'sequential',
-    progress: { type: 'questionCount', count: 10 },
+    selection: 'random',
+    progress: { type: 'timeLimit', seconds: 60 },
   },
 };
 
