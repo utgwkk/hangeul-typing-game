@@ -77,12 +77,6 @@ export default function Prompt({ prompt, charStatuses, composing, showKeyGuide, 
       </div>
 
       {/* Word/sentence learning aids */}
-      {prompt.reading && (
-        <p className="text-sm text-gray-500">
-          <span className="font-medium text-gray-600">{t('word.reading')}: </span>
-          {prompt.reading}
-        </p>
-      )}
       {prompt.meaning && (
         <p className="text-sm text-gray-500">
           <span className="font-medium text-gray-600">{t('word.meaning')}: </span>
