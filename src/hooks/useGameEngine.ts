@@ -133,7 +133,7 @@ function computeNextKey(
         const nextChar = promptChars[committedLen + 1]
         if (/[가-힣]/.test(nextChar)) {
           const nextSyllable = decomposeSyllable(nextChar)
-          if (nextSyllable) {
+          if (nextSyllable?.jung) {
             const nextVowelParts = decomposeVowel(nextSyllable.jung)
             nextJamo = nextVowelParts ? nextVowelParts[0] : nextSyllable.jung
           }
