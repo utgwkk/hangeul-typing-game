@@ -30,7 +30,6 @@ const SYLLABLE_PROMPTS: readonly Prompt[] = SYLLABLES.map((text) => ({ text }));
 
 const WORD_PROMPTS: readonly Prompt[] = WORDS.map((w) => ({
   text: w.hangul,
-  reading: w.reading,
   meaning: w.meaning,
 }));
 
