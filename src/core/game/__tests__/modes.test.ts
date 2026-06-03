@@ -43,18 +43,26 @@ describe('getMode', () => {
 
 describe('buildQuestionList', () => {
   it('sequential mode keeps source order', () => {
-    const mode = MODES.sentence;
+    const mode = {
+      id: 'sentence' as ModeId,
+      prompts: [{ text: '안녕' }, { text: '감사' }, { text: '사랑' }],
+      selection: 'sequential' as const,
+      progress: { type: 'questionCount' as const, count: 2 },
+    };
     const list = buildQuestionList(mode);
-    // sentence mode is questionCount:10, sequential
-    expect(list).toHaveLength(10);
-    expect(list.map((p) => p.text)).toEqual(
-      mode.prompts.slice(0, 10).map((p) => p.text),
-    );
+    expect(list).toHaveLength(2);
+    expect(list.map((p) => p.text)).toEqual(['안녕', '감사']);
   });
 
   it('questionCount mode returns exactly count items', () => {
-    const list = buildQuestionList(MODES.word);
-    expect(list).toHaveLength(20);
+    const mode = {
+      id: 'word' as ModeId,
+      prompts: [{ text: '물' }, { text: '불' }, { text: '산' }],
+      selection: 'random' as const,
+      progress: { type: 'questionCount' as const, count: 2 },
+    };
+    const list = buildQuestionList(mode);
+    expect(list).toHaveLength(2);
   });
 
   it('repeats the source to fill count when there are too few prompts', () => {
