@@ -1,10 +1,17 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Language } from './i18n'
+import { useGameEngine } from './hooks/useGameEngine'
+import type { ModeId } from './core/game/modes'
+import StartScreen from './components/StartScreen'
+import GameScreen from './components/GameScreen'
+import ResultScreen from './components/ResultScreen'
 
 function App() {
-  const { t, i18n } = useTranslation()
+  const { i18n } = useTranslation()
   const [language, setLanguage] = useState<Language>(i18n.language as Language)
+  const [selectedMode, setSelectedMode] = useState<ModeId>('syllable')
+  const gameEngine = useGameEngine()
 
   const toggleLanguage = () => {
     const next: Language = language === 'ja' ? 'ko' : 'ja'
@@ -15,16 +22,47 @@ function App() {
     window.history.replaceState(null, '', url)
   }
 
+  function handleStart(modeId: ModeId) {
+    setSelectedMode(modeId)
+    gameEngine.start(modeId)
+  }
+
+  if (gameEngine.phase === 'playing') {
+    return (
+      <GameScreen
+        currentPrompt={gameEngine.currentPrompt}
+        charStatuses={gameEngine.charStatuses}
+        composing={gameEngine.composing}
+        statsSnapshot={gameEngine.statsSnapshot}
+        timer={gameEngine.timer}
+        score={gameEngine.score}
+        combo={gameEngine.combo}
+        isWrong={gameEngine.isWrong}
+        nextKeyCode={gameEngine.nextKeyCode}
+        nextKeyShift={gameEngine.nextKeyShift}
+        selectedMode={selectedMode}
+      />
+    )
+  }
+
+  if (gameEngine.phase === 'finished') {
+    return (
+      <ResultScreen
+        statsSnapshot={gameEngine.statsSnapshot}
+        score={gameEngine.score}
+        maxCombo={gameEngine.maxCombo}
+        onRetry={() => gameEngine.start(selectedMode)}
+        onBackToMenu={gameEngine.reset}
+      />
+    )
+  }
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 gap-4">
-      <h1 className="text-3xl font-bold text-gray-800">{t('menu.title')}</h1>
-      <button
-        onClick={toggleLanguage}
-        className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
-      >
-        {t('menu.selectLanguage')}: {t(`language.${language}`)}
-      </button>
-    </div>
+    <StartScreen
+      onStart={handleStart}
+      language={language}
+      onToggleLanguage={toggleLanguage}
+    />
   )
 }
 
