@@ -33,6 +33,7 @@ function App() {
         currentPrompt={gameEngine.currentPrompt}
         charStatuses={gameEngine.charStatuses}
         composing={gameEngine.composing}
+        composingState={gameEngine.composingState}
         statsSnapshot={gameEngine.statsSnapshot}
         timer={gameEngine.timer}
         score={gameEngine.score}

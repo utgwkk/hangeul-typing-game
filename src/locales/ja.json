@@ -51,5 +51,8 @@
   },
   "error": {
     "imeWarning": "IMEをオフにしてください"
+  },
+  "keyGuide": {
+    "toggle": "キーガイド"
   }
 }
