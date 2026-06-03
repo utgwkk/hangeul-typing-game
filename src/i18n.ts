@@ -15,12 +15,15 @@ function getInitialLanguage(): Language {
   return DEFAULT_LANGUAGE
 }
 
+const initialLanguage = getInitialLanguage()
+document.documentElement.lang = initialLanguage
+
 i18n.use(initReactI18next).init({
   resources: {
     ja: { translation: ja },
     ko: { translation: ko },
   },
-  lng: getInitialLanguage(),
+  lng: initialLanguage,
   fallbackLng: DEFAULT_LANGUAGE,
   interpolation: {
     escapeValue: false,

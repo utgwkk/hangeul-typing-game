@@ -17,6 +17,7 @@ function App() {
     const next: Language = language === 'ja' ? 'ko' : 'ja'
     setLanguage(next)
     i18n.changeLanguage(next)
+    document.documentElement.lang = next
     const url = new URL(window.location.href)
     url.searchParams.set('lang', next)
     window.history.replaceState(null, '', url)
