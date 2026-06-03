@@ -34,6 +34,7 @@ function Key({ code, isHighlight, isWrong, isShift }: KeyProps) {
   const [normal, shifted] = entry
   const label = isShift && shifted ? shifted : normal
   const shiftLabel = shifted && !isShift ? shifted : null
+  const alphaLabel = code.startsWith('Key') ? code.slice(3) : null
 
   let bg = 'bg-white border-gray-300 text-gray-800'
   if (isWrong) {
@@ -49,6 +50,11 @@ function Key({ code, isHighlight, isWrong, isShift }: KeyProps) {
       {shiftLabel && (
         <span className="absolute top-0.5 right-1 text-[9px] text-gray-400 font-normal">
           {shiftLabel}
+        </span>
+      )}
+      {alphaLabel && (
+        <span className="absolute bottom-0.5 left-1 text-[9px] text-gray-400 font-normal">
+          {alphaLabel}
         </span>
       )}
       <span className="text-base leading-none">{label}</span>
