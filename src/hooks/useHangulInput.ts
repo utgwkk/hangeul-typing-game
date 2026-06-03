@@ -57,6 +57,12 @@ export function useHangulInput(options?: UseHangulInputOptions): UseHangulInputR
       if (jamo) {
         e.preventDefault()
         setState(prev => automatonInputJamo(prev, jamo))
+        return
+      }
+
+      if (e.key.length === 1) {
+        e.preventDefault()
+        setState(prev => inputLiteral(prev, e.key))
       }
     }
 

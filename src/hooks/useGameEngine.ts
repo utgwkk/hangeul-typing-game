@@ -115,7 +115,8 @@ export function useGameEngine(): UseGameEngineReturn {
       const isBackspace = e.key === 'Backspace'
       const isSpace = e.key === ' '
       const jamo = isBackspace || isSpace ? null : keyToJamo(e.code, e.shiftKey)
-      if (!isBackspace && !isSpace && !jamo) return
+      const isOtherLiteral = !isBackspace && !isSpace && !jamo && e.key.length === 1
+      if (!isBackspace && !isSpace && !jamo && !isOtherLiteral) return
 
       e.preventDefault()
 
@@ -130,8 +131,8 @@ export function useGameEngine(): UseGameEngineReturn {
         }
 
         let newAutomaton: AutomatonState
-        if (isSpace) {
-          newAutomaton = inputLiteral(prev.automaton, ' ')
+        if (isSpace || isOtherLiteral) {
+          newAutomaton = inputLiteral(prev.automaton, e.key)
         } else {
           newAutomaton = automatonInputJamo(prev.automaton, jamo!)
         }
