@@ -23,8 +23,9 @@ function consonantToKeys(consonant: string): string {
 }
 
 /** Convert a single Hangul syllable to the keyboard key sequence needed to type it.
- *  Non-Hangul characters are returned as-is. */
+ *  Non-Hangul characters are returned as-is. Spaces are shown as '⎵'. */
 export function syllableToKeys(char: string): string {
+  if (char === ' ') return '⎵';
   const syllable = decomposeSyllable(char);
   if (!syllable) return char;
   let result = '';

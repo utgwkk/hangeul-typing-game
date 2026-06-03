@@ -30,8 +30,8 @@ describe('syllableToKeys', () => {
     expect(syllableToKeys('밥')).toBe('qkq');
   });
 
-  it('非ハングル文字（スペース）はそのまま返す', () => {
-    expect(syllableToKeys(' ')).toBe(' ');
+  it('スペースは⎵を返す', () => {
+    expect(syllableToKeys(' ')).toBe('⎵');
   });
 
   it('激音 ㄸ: 떡 → Ejr', () => {
