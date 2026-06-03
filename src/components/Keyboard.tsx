@@ -22,6 +22,11 @@ interface KeyboardProps {
   isShift?: boolean
 }
 
+interface SpaceKeyProps {
+  isHighlight: boolean
+  isWrong: boolean
+}
+
 interface KeyProps {
   code: string
   isHighlight: boolean
@@ -53,6 +58,23 @@ function ShiftKey({ isHighlight, isWrong, isActive }: ShiftKeyProps) {
       className={`flex items-center justify-center w-7 h-10 rounded border-2 text-xs font-bold select-none ${bg} transition-colors duration-100`}
     >
       ⇧
+    </div>
+  )
+}
+
+function SpaceKey({ isHighlight, isWrong }: SpaceKeyProps) {
+  let bg = 'bg-white border-gray-300 text-gray-500'
+  if (isWrong) {
+    bg = 'bg-red-200 border-red-400 text-red-800 animate-pulse'
+  } else if (isHighlight) {
+    bg = 'bg-blue-200 border-blue-500 text-blue-900'
+  }
+
+  return (
+    <div
+      className={`flex items-center justify-center w-48 h-8 rounded border-2 text-xs font-bold select-none ${bg} transition-colors duration-100`}
+    >
+      ⎵
     </div>
   )
 }
@@ -124,6 +146,12 @@ export default function Keyboard({
           ))}
         </div>
       ))}
+      <div className="flex justify-center w-full mt-0">
+        <SpaceKey
+          isHighlight={highlightCode === 'Space'}
+          isWrong={isWrong && highlightCode === 'Space'}
+        />
+      </div>
       <p className="text-xs text-gray-400 mt-1">{t('keyboard.shiftHint')}</p>
     </div>
   )
