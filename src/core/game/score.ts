@@ -2,6 +2,8 @@
 const BASE_POINTS = 10;
 
 /** コンボ倍率のしきい値。 */
+const COMBO_TIER_MAX = 30;
+const COMBO_TIER_SUPER = 20;
 const COMBO_TIER_HIGH = 10;
 const COMBO_TIER_MID = 5;
 
@@ -36,11 +38,15 @@ export interface TimerSnapshot {
 
 /**
  * コンボ数から倍率を返す。
+ * - combo >= 30: 3.0x
+ * - combo >= 20: 2.5x
  * - combo >= 10: 2.0x
  * - combo >= 5:  1.5x
  * - それ以外:    1.0x
  */
 export function comboMultiplier(combo: number): number {
+  if (combo >= COMBO_TIER_MAX) return 3.0;
+  if (combo >= COMBO_TIER_SUPER) return 2.5;
   if (combo >= COMBO_TIER_HIGH) return 2.0;
   if (combo >= COMBO_TIER_MID) return 1.5;
   return 1.0;
@@ -89,11 +95,12 @@ export function startTimer(
  *
  * @param state 現在のスコア状態
  * @param cpm 現在の CPM（速度ボーナス算出に使用、省略時は 0）
+ * @param syllableCount 完了した問題の音節数（省略時は 1）
  */
-export function recordCorrect(state: ScoreState, cpm: number = 0): ScoreState {
+export function recordCorrect(state: ScoreState, cpm: number = 0, syllableCount: number = 1): ScoreState {
   const newCombo = state.combo + 1;
   const multiplier = comboMultiplier(newCombo);
-  const points = Math.round(BASE_POINTS * multiplier) + speedBonus(cpm);
+  const points = Math.round(BASE_POINTS * syllableCount * multiplier) + speedBonus(cpm);
   return {
     ...state,
     score: state.score + points,

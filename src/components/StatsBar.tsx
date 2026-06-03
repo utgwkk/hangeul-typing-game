@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { StatsSnapshot } from '../core/game/stats'
-import type { TimerSnapshot } from '../core/game/score'
+import { comboMultiplier, type TimerSnapshot } from '../core/game/score'
 
 interface StatsBarProps {
   stats: StatsSnapshot
@@ -23,6 +23,27 @@ function StatItem({ label, value, highlight }: StatItemProps) {
       <span className="text-xs text-gray-500 uppercase tracking-wide">{label}</span>
       <span className={`text-lg font-bold ${highlight ? 'text-blue-600' : 'text-gray-800'}`}>
         {value}
+      </span>
+    </div>
+  )
+}
+
+function ComboItem({ combo }: { combo: number }) {
+  const { t } = useTranslation()
+  const multiplier = comboMultiplier(combo)
+  const colorClass =
+    multiplier >= 3.0 ? 'text-red-500 animate-pulse' :
+    multiplier >= 2.5 ? 'text-orange-500' :
+    multiplier >= 2.0 ? 'text-yellow-500' :
+    multiplier >= 1.5 ? 'text-green-600' :
+    'text-gray-800'
+
+  return (
+    <div className="flex flex-col items-center min-w-[60px]">
+      <span className="text-xs text-gray-500 uppercase tracking-wide">{t('stats.combo')}</span>
+      <span className={`text-lg font-bold ${colorClass}`}>
+        ×{combo}
+        {combo >= 5 && <span className="text-xs ml-1 opacity-75">{multiplier}x</span>}
       </span>
     </div>
   )
@@ -58,7 +79,7 @@ export default function StatsBar({
       <StatItem label={t('stats.wpm')} value={stats.wpm} />
       <StatItem label={t('stats.accuracy')} value={`${stats.accuracy}%`} />
       <StatItem label={t('stats.score')} value={score} highlight />
-      <StatItem label={t('stats.combo')} value={`×${combo}`} highlight={combo >= 5} />
+      <ComboItem combo={combo} />
       <div className="flex flex-col items-center min-w-[60px]">
         <span className="text-xs text-gray-500 uppercase tracking-wide">{timeLabel}</span>
         <span
