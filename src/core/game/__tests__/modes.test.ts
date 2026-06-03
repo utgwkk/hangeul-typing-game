@@ -21,9 +21,8 @@ describe('MODES', () => {
     }
   });
 
-  it('word prompts carry reading and meaning aids', () => {
+  it('word prompts carry meaning aids', () => {
     const word = MODES.word.prompts[0];
-    expect(word.reading).toBeTruthy();
     expect(word.meaning?.ja).toBeTruthy();
   });
 

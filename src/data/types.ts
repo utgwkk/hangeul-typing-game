@@ -11,12 +11,10 @@ export type LocalizedText = { ja: string } & Partial<Record<Language, string>>;
 /**
  * A single word prompt with learning aids.
  * - `hangul`: the text the player types
- * - `reading`: kana reading (Japanese learner aid)
  * - `meaning`: localized gloss (shown according to UI language)
  */
 export interface WordEntry {
   hangul: string;
-  reading: string;
   meaning: LocalizedText;
 }
 
@@ -36,6 +34,5 @@ export interface SentenceEntry {
  */
 export interface Prompt {
   text: string;
-  reading?: string;
   meaning?: LocalizedText;
 }

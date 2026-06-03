@@ -46,8 +46,7 @@
     "shiftHint": "Shiftキーを押すと双子音/ㅒㅖが表示されます"
   },
   "word": {
-    "meaning": "意味",
-    "reading": "読み"
+    "meaning": "意味"
   },
   "error": {
     "imeWarning": "IMEをオフにしてください"

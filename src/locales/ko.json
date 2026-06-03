@@ -46,8 +46,7 @@
     "shiftHint": "Shift 키를 누르면 쌍자음/ㅒㅖ가 표시됩니다"
   },
   "word": {
-    "meaning": "의미",
-    "reading": "읽기"
+    "meaning": "의미"
   },
   "error": {
     "imeWarning": "IME를 꺼 주세요"
