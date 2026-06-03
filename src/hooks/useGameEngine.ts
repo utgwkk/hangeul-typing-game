@@ -172,6 +172,7 @@ export function useGameEngine(): UseGameEngineReturn {
             automaton: nextPhase === 'playing' ? createInitialState() : committed,
             stats: newStats,
             score: newScore,
+            comboExtension: prev.comboExtension,
           }
         }
 
