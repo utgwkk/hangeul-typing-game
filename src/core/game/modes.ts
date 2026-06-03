@@ -14,6 +14,14 @@ export type ProgressCondition =
   | { type: 'questionCount'; count: number }
   | { type: 'timeLimit'; seconds: number };
 
+/** コンボによる制限時間延長の設定。 */
+export interface ComboExtension {
+  /** 何コンボごとに延長するか。 */
+  interval: number;
+  /** 延長する秒数。 */
+  bonusSeconds: number;
+}
+
 /** 1 つの練習モードの設定。 */
 export interface ModeConfig {
   /** モード識別子。i18n キー (`mode.<id>`) とも対応する。 */
@@ -24,6 +32,8 @@ export interface ModeConfig {
   selection: SelectionStrategy;
   /** 進行の終了条件。 */
   progress: ProgressCondition;
+  /** コンボによる制限時間延長の設定。null なら延長なし。 */
+  comboExtension: ComboExtension | null;
 }
 
 const SYLLABLE_PROMPTS: readonly Prompt[] = SYLLABLES.map((text) => ({ text }));
@@ -45,18 +55,21 @@ export const MODES: Readonly<Record<ModeId, ModeConfig>> = {
     prompts: SYLLABLE_PROMPTS,
     selection: 'random',
     progress: { type: 'timeLimit', seconds: 60 },
+    comboExtension: { interval: 10, bonusSeconds: 3 },
   },
   word: {
     id: 'word',
     prompts: WORD_PROMPTS,
     selection: 'random',
     progress: { type: 'timeLimit', seconds: 60 },
+    comboExtension: { interval: 5, bonusSeconds: 5 },
   },
   sentence: {
     id: 'sentence',
     prompts: SENTENCE_PROMPTS,
     selection: 'random',
     progress: { type: 'timeLimit', seconds: 60 },
+    comboExtension: { interval: 3, bonusSeconds: 8 },
   },
 };
 

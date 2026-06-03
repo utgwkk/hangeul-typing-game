@@ -35,11 +35,12 @@ import {
   startTimer as startScoreTimer,
   recordCorrect,
   recordMiss,
+  extendTime,
   getTimer,
   type ScoreState,
   type TimerSnapshot,
 } from '../core/game/score'
-import { getMode, type ModeId } from '../core/game/modes'
+import { getMode, type ModeId, type ComboExtension } from '../core/game/modes'
 import type { Prompt } from '../data/types'
 
 export type GamePhase = 'idle' | 'playing' | 'finished'
@@ -50,6 +51,7 @@ interface GameState {
   automaton: AutomatonState
   stats: StatsState
   score: ScoreState
+  comboExtension: ComboExtension | null
 }
 
 const IDLE_STATE: GameState = {
@@ -58,6 +60,7 @@ const IDLE_STATE: GameState = {
   automaton: createInitialState(),
   stats: createStats(),
   score: createScore(),
+  comboExtension: null,
 }
 
 export interface UseGameEngineReturn {
@@ -155,6 +158,10 @@ export function useGameEngine(): UseGameEngineReturn {
           const snapshot = computeStats(newStats)
           const syllableCount = Array.from(prompt.text).length
           newScore = recordCorrect(newScore, snapshot.cpm, syllableCount)
+          const ext = prev.comboExtension
+          if (ext && newScore.combo % ext.interval === 0) {
+            newScore = extendTime(newScore, ext.bonusSeconds)
+          }
           newStats = recordSyllable(newStats, syllableCount)
           const newEngine = advanceQuestion(prev.engine)
 
@@ -186,6 +193,7 @@ export function useGameEngine(): UseGameEngineReturn {
       automaton: createInitialState(),
       stats: createStats(),
       score: createScore(timeLimitSeconds),
+      comboExtension: config.comboExtension,
     })
     setNow(Date.now())
   }, [])

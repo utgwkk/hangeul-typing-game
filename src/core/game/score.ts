@@ -118,6 +118,17 @@ export function recordMiss(state: ScoreState): ScoreState {
 }
 
 /**
+ * 制限時間を延長する。カウントアップモード（timeLimitMs === null）では何もしない。
+ *
+ * @param state 現在のスコア状態
+ * @param bonusSeconds 延長する秒数
+ */
+export function extendTime(state: ScoreState, bonusSeconds: number): ScoreState {
+  if (state.timeLimitMs == null) return state;
+  return { ...state, timeLimitMs: state.timeLimitMs + bonusSeconds * 1000 };
+}
+
+/**
  * 現時点のタイマースナップショットを返す。
  *
  * @param state スコア状態

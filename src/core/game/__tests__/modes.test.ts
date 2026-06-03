@@ -48,6 +48,7 @@ describe('buildQuestionList', () => {
       prompts: [{ text: '안녕' }, { text: '감사' }, { text: '사랑' }],
       selection: 'sequential' as const,
       progress: { type: 'questionCount' as const, count: 2 },
+      comboExtension: null,
     };
     const list = buildQuestionList(mode);
     expect(list).toHaveLength(2);
@@ -60,6 +61,7 @@ describe('buildQuestionList', () => {
       prompts: [{ text: '물' }, { text: '불' }, { text: '산' }],
       selection: 'random' as const,
       progress: { type: 'questionCount' as const, count: 2 },
+      comboExtension: null,
     };
     const list = buildQuestionList(mode);
     expect(list).toHaveLength(2);
@@ -71,6 +73,7 @@ describe('buildQuestionList', () => {
       prompts: [{ text: '가' }, { text: '나' }],
       selection: 'sequential' as const,
       progress: { type: 'questionCount' as const, count: 5 },
+      comboExtension: null,
     };
     const list = buildQuestionList(mode);
     expect(list.map((p) => p.text)).toEqual(['가', '나', '가', '나', '가']);
