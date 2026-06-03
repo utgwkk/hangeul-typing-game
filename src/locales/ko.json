@@ -51,5 +51,8 @@
   },
   "error": {
     "imeWarning": "IME를 꺼 주세요"
+  },
+  "keyGuide": {
+    "toggle": "키 가이드"
   }
 }

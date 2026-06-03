@@ -9,11 +9,13 @@ import type { CharStatus } from '../core/game/engine'
 import type { StatsSnapshot } from '../core/game/stats'
 import type { TimerSnapshot } from '../core/game/score'
 import type { Prompt as PromptData } from '../data/types'
+import type { SyllableState } from '../core/hangul/automaton'
 
 interface GameScreenProps {
   currentPrompt: PromptData | null
   charStatuses: CharStatus[]
   composing: string
+  composingState: SyllableState
   statsSnapshot: StatsSnapshot
   timer: TimerSnapshot
   score: number
@@ -28,6 +30,7 @@ export default function GameScreen({
   currentPrompt,
   charStatuses,
   composing,
+  composingState,
   statsSnapshot,
   timer,
   score,
@@ -39,6 +42,16 @@ export default function GameScreen({
 }: GameScreenProps) {
   const { t } = useTranslation()
   const [isShift, setIsShift] = useState(false)
+  const [showKeyGuide, setShowKeyGuide] = useState(() =>
+    localStorage.getItem('keyGuide') === 'true'
+  )
+
+  const toggleKeyGuide = () => {
+    setShowKeyGuide(prev => {
+      localStorage.setItem('keyGuide', String(!prev))
+      return !prev
+    })
+  }
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => setIsShift(e.shiftKey)
@@ -72,6 +85,8 @@ export default function GameScreen({
           prompt={currentPrompt}
           charStatuses={charStatuses}
           composing={composing}
+          showKeyGuide={showKeyGuide}
+          composingState={composingState}
         />
       )}
 
@@ -81,6 +96,17 @@ export default function GameScreen({
         isWrong={isWrong}
         isShift={isShift}
       />
+
+      <button
+        onClick={toggleKeyGuide}
+        className={`text-xs px-3 py-1 rounded border transition-colors ${
+          showKeyGuide
+            ? 'bg-blue-100 text-blue-700 border-blue-300'
+            : 'bg-gray-100 text-gray-500 border-gray-300'
+        }`}
+      >
+        {t('keyGuide.toggle')}
+      </button>
     </div>
   )
 }

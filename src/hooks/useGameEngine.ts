@@ -8,6 +8,7 @@ import {
   commit as automatonCommit,
   renderSyllable,
   type AutomatonState,
+  type SyllableState,
 } from '../core/hangul/automaton'
 import { keyToJamo } from '../core/hangul/layout'
 import { computeNextKey } from './internal/computeNextKey'
@@ -74,6 +75,8 @@ export interface UseGameEngineReturn {
   /** Key code of the next key to highlight on the virtual keyboard. */
   nextKeyCode: string | null
   nextKeyShift: boolean
+  /** The syllable currently being composed (raw automaton state). */
+  composingState: SyllableState
   start: (modeId: ModeId) => void
   reset: () => void
 }
@@ -218,6 +221,7 @@ export function useGameEngine(): UseGameEngineReturn {
     isWrong,
     nextKeyCode,
     nextKeyShift,
+    composingState: automaton.current,
     start,
     reset,
   }
