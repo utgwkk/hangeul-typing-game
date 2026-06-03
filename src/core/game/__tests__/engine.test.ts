@@ -17,6 +17,7 @@ const countMode = (count: number): ModeConfig => ({
   prompts: FIXED_PROMPTS,
   selection: 'sequential',
   progress: { type: 'questionCount', count },
+  comboExtension: null,
 });
 
 const timeLimitMode = (seconds: number): ModeConfig => ({
@@ -24,6 +25,7 @@ const timeLimitMode = (seconds: number): ModeConfig => ({
   prompts: FIXED_PROMPTS,
   selection: 'sequential',
   progress: { type: 'timeLimit', seconds },
+  comboExtension: null,
 });
 
 // ─── createEngine ────────────────────────────────────────────────────────────
@@ -41,6 +43,7 @@ describe('createEngine', () => {
       prompts: [],
       selection: 'sequential',
       progress: { type: 'questionCount', count: 5 },
+      comboExtension: null,
     };
     expect(createEngine(mode).finished).toBe(true);
   });
@@ -76,6 +79,7 @@ describe('currentPrompt', () => {
       prompts: [],
       selection: 'sequential',
       progress: { type: 'questionCount', count: 5 },
+      comboExtension: null,
     };
     expect(currentPrompt(createEngine(mode))).toBeNull();
   });
