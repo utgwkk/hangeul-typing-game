@@ -68,7 +68,16 @@ export function computeNextKey(
     const nextChar = promptChars[committedLen + 1]
     if (/[가-힣]/.test(nextChar)) {
       const nextSyllable = decomposeSyllable(nextChar)
-      nextJamo = nextSyllable?.cho ?? null
+      if (nextSyllable) {
+        if (cur.jong !== null && cur.jong === nextSyllable.cho) {
+          // cur.jong was tentatively placed as final consonant but is actually
+          // the cho of the next syllable; guide the user to type jung instead.
+          const vowelParts = decomposeVowel(nextSyllable.jung!)
+          nextJamo = vowelParts ? vowelParts[0] : nextSyllable.jung
+        } else {
+          nextJamo = nextSyllable.cho ?? null
+        }
+      }
     }
   }
 

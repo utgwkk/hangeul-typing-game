@@ -163,4 +163,51 @@ describe('computeNextKey', () => {
       })
     })
   })
+
+  describe('초성が종성に一時格納される場合のルックアヘッド (issue #33)', () => {
+    it('가족: 갖 state (jong=ㅈ is tentative cho of 족) → show ㅗ (KeyH)', () => {
+      // Typed ㄱ+ㅏ+ㅈ; IME tentatively stores ㅈ as jong of 가.
+      // 족's cho=ㅈ is already typed; next key is 족's jung=ㅗ.
+      expect(computeNextKey(prompt('가족'), makeAutomaton('', 'ㄱ', 'ㅏ', 'ㅈ'))).toEqual({
+        code: 'KeyH',
+        shift: false,
+      })
+    })
+
+    it('시간: 식 state (jong=ㄱ is tentative cho of 간) → show ㅏ (KeyK)', () => {
+      // Typed ㅅ+ㅣ+ㄱ; IME tentatively stores ㄱ as jong of 시.
+      // 간's cho=ㄱ is already typed; next key is 간's jung=ㅏ.
+      expect(computeNextKey(prompt('시간'), makeAutomaton('', 'ㅅ', 'ㅣ', 'ㄱ'))).toEqual({
+        code: 'KeyK',
+        shift: false,
+      })
+    })
+
+    it('여행: 옇 state (jong=ㅎ is tentative cho of 행) → show ㅐ (KeyO)', () => {
+      // Typed ㅇ+ㅕ+ㅎ; IME tentatively stores ㅎ as jong of 여.
+      // 행's cho=ㅎ is already typed; next key is 행's jung=ㅐ.
+      expect(computeNextKey(prompt('여행'), makeAutomaton('', 'ㅇ', 'ㅕ', 'ㅎ'))).toEqual({
+        code: 'KeyO',
+        shift: false,
+      })
+    })
+
+    it("안녕: 안 state with tentative jong=ㄴ matching 녕's cho → show ㅕ (KeyU)", () => {
+      // Typed ㅇ+ㅏ+ㄴ; IME tentatively stores ㄴ as jong of 안.
+      // 녕's cho=ㄴ is already typed; next key is 녕's jung=ㅕ.
+      expect(computeNextKey(prompt('안녕'), makeAutomaton('', 'ㅇ', 'ㅏ', 'ㄴ'))).toEqual({
+        code: 'KeyU',
+        shift: false,
+      })
+    })
+
+    it('컴퓨터: 컴픁 state (committed=컴, jong=ㅌ is tentative cho of 터) → show ㅓ (KeyJ)', () => {
+      // Typed 컴 committed, then ㅍ+ㅠ+ㅌ; IME tentatively stores ㅌ as jong of 퓨.
+      // 터's cho=ㅌ is already typed; next key is 터's jung=ㅓ.
+      expect(computeNextKey(prompt('컴퓨터'), makeAutomaton('컴', 'ㅍ', 'ㅠ', 'ㅌ'))).toEqual({
+        code: 'KeyJ',
+        shift: false,
+      })
+    })
+  })
 })
