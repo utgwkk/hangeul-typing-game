@@ -32,6 +32,7 @@ import {
 import {
   createScore,
   startTimer as startScoreTimer,
+  recordJamoCorrect,
   recordCorrect,
   recordMiss,
   extendTime,
@@ -161,6 +162,8 @@ export function useGameEngine(): UseGameEngineReturn {
           newScore = recordMiss(newScore)
           return { ...prev, stats: newStats, score: newScore, isWrong: true }
         }
+
+        newScore = recordJamoCorrect(newScore)
 
         let newAutomaton: AutomatonState
         if (isSpace || isOtherLiteral) {
