@@ -73,8 +73,14 @@ export function computeNextJamo(
       const nextSyllable = decomposeSyllable(nextChar)
       if (nextSyllable) {
         if (cur.jong !== null && cur.jong === nextSyllable.cho) {
-          // cur.jong was tentatively placed as final consonant but is actually
-          // the cho of the next syllable; guide the user to type jung instead.
+          if (cur.jong === targetSyllable.jong) {
+            // The jong is confirmed (matches target) but coincides with the
+            // next syllable's cho (e.g. 듣다, 안녕). Type it again to flush
+            // the current syllable and start the next one.
+            return cur.jong
+          }
+          // Tentative jong is actually the cho of the next syllable —
+          // guide the user to type the jung so the jong rises (e.g. 가족).
           const vowelParts = decomposeVowel(nextSyllable.jung!)
           return vowelParts ? vowelParts[0] : nextSyllable.jung
         } else {

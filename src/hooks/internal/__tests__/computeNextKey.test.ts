@@ -192,11 +192,11 @@ describe('computeNextKey', () => {
       })
     })
 
-    it("안녕: 안 state with tentative jong=ㄴ matching 녕's cho → show ㅕ (KeyU)", () => {
-      // Typed ㅇ+ㅏ+ㄴ; IME tentatively stores ㄴ as jong of 안.
-      // 녕's cho=ㄴ is already typed; next key is 녕's jung=ㅕ.
+    it("안녕: 안 state with confirmed jong=ㄴ also matching 녕's cho → show ㄴ again (KeyS)", () => {
+      // Typed ㅇ+ㅏ+ㄴ; jong=ㄴ is confirmed (안's jong=ㄴ) but coincides with 녕's cho.
+      // Must type ㄴ again to flush 안 and start 녕.
       expect(computeNextKey(prompt('안녕'), makeAutomaton('', 'ㅇ', 'ㅏ', 'ㄴ'))).toEqual({
-        code: 'KeyU',
+        code: 'KeyS',
         shift: false,
       })
     })
@@ -206,6 +206,15 @@ describe('computeNextKey', () => {
       // 터's cho=ㅌ is already typed; next key is 터's jung=ㅓ.
       expect(computeNextKey(prompt('컴퓨터'), makeAutomaton('컴', 'ㅍ', 'ㅠ', 'ㅌ'))).toEqual({
         code: 'KeyJ',
+        shift: false,
+      })
+    })
+
+    it('듣다: 듣 state (jong=ㄷ confirmed, also matching 다의 cho) → show ㄷ again (KeyE)', () => {
+      // 듣's jong=ㄷ is confirmed and coincides with 다's cho=ㄷ.
+      // Must type ㄷ again to flush 듣 and start 다.
+      expect(computeNextKey(prompt('듣다'), makeAutomaton('', 'ㄷ', 'ㅡ', 'ㄷ'))).toEqual({
+        code: 'KeyE',
         shift: false,
       })
     })
@@ -259,6 +268,14 @@ describe('computeNextJamo', () => {
 
   it('returns jung of next syllable when tentative jong matches its cho (가족, jong=ㅈ → ㅗ)', () => {
     expect(computeNextJamo(prompt('가족'), makeAutomaton('', 'ㄱ', 'ㅏ', 'ㅈ'))).toBe('ㅗ')
+  })
+
+  it('returns confirmed jong again when it coincides with next cho (듣다, jong=ㄷ → ㄷ)', () => {
+    expect(computeNextJamo(prompt('듣다'), makeAutomaton('', 'ㄷ', 'ㅡ', 'ㄷ'))).toBe('ㄷ')
+  })
+
+  it('returns confirmed jong again when it coincides with next cho (안녕, jong=ㄴ → ㄴ)', () => {
+    expect(computeNextJamo(prompt('안녕'), makeAutomaton('', 'ㅇ', 'ㅏ', 'ㄴ'))).toBe('ㄴ')
   })
 
   it('returns null when current syllable is the last and fully typed (가, fully typed)', () => {
