@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   createScore,
   startTimer,
+  recordJamoCorrect,
   recordCorrect,
   recordMiss,
   getTimer,
@@ -10,28 +11,28 @@ import {
 } from '../score';
 
 describe('comboMultiplier', () => {
-  it('returns 1.0 for combo < 5', () => {
+  it('returns 1.0 for combo < 10', () => {
     expect(comboMultiplier(1)).toBe(1.0);
-    expect(comboMultiplier(4)).toBe(1.0);
+    expect(comboMultiplier(9)).toBe(1.0);
   });
 
-  it('returns 1.5 for combo 5–9', () => {
-    expect(comboMultiplier(5)).toBe(1.5);
-    expect(comboMultiplier(9)).toBe(1.5);
+  it('returns 1.5 for combo 10–19', () => {
+    expect(comboMultiplier(10)).toBe(1.5);
+    expect(comboMultiplier(19)).toBe(1.5);
   });
 
-  it('returns 2.0 for combo 10–19', () => {
-    expect(comboMultiplier(10)).toBe(2.0);
-    expect(comboMultiplier(19)).toBe(2.0);
+  it('returns 2.0 for combo 20–39', () => {
+    expect(comboMultiplier(20)).toBe(2.0);
+    expect(comboMultiplier(39)).toBe(2.0);
   });
 
-  it('returns 2.5 for combo 20–29', () => {
-    expect(comboMultiplier(20)).toBe(2.5);
-    expect(comboMultiplier(29)).toBe(2.5);
+  it('returns 2.5 for combo 40–59', () => {
+    expect(comboMultiplier(40)).toBe(2.5);
+    expect(comboMultiplier(59)).toBe(2.5);
   });
 
-  it('returns 3.0 for combo >= 30', () => {
-    expect(comboMultiplier(30)).toBe(3.0);
+  it('returns 3.0 for combo >= 60', () => {
+    expect(comboMultiplier(60)).toBe(3.0);
     expect(comboMultiplier(99)).toBe(3.0);
   });
 });
@@ -81,76 +82,106 @@ describe('startTimer', () => {
   });
 });
 
-describe('recordCorrect', () => {
-  it('increments score by BASE_POINTS (10) × 1.0 combo when combo < 5', () => {
+describe('recordJamoCorrect', () => {
+  it('increments combo by 1', () => {
     let s = createScore();
-    s = recordCorrect(s, 0); // combo becomes 1, multiplier 1.0, no speed bonus
-    expect(s.score).toBe(10);
+    s = recordJamoCorrect(s);
     expect(s.combo).toBe(1);
+    s = recordJamoCorrect(s);
+    expect(s.combo).toBe(2);
+  });
+
+  it('does not change score', () => {
+    let s = createScore();
+    s = recordJamoCorrect(s);
+    expect(s.score).toBe(0);
+  });
+
+  it('updates maxCombo', () => {
+    let s = createScore();
+    s = recordJamoCorrect(s);
+    s = recordJamoCorrect(s);
+    s = recordMiss(s);
+    s = recordJamoCorrect(s);
+    expect(s.combo).toBe(1);
+    expect(s.maxCombo).toBe(2);
+  });
+});
+
+describe('recordCorrect', () => {
+  it('adds BASE_POINTS × 1.0 when combo < 10', () => {
+    let s = createScore();
+    s = recordJamoCorrect(s); // combo = 1
+    s = recordCorrect(s, 0);
+    expect(s.score).toBe(10);
+    expect(s.combo).toBe(1); // unchanged
     expect(s.correctSyllables).toBe(1);
   });
 
-  it('applies 1.5x multiplier at combo 5', () => {
+  it('does not change combo', () => {
     let s = createScore();
-    for (let i = 0; i < 4; i++) s = recordCorrect(s, 0);
-    s = recordCorrect(s, 0); // combo becomes 5 → 1.5x → round(10*1.5) = 15
+    for (let i = 0; i < 5; i++) s = recordJamoCorrect(s); // combo = 5
+    s = recordCorrect(s, 0);
     expect(s.combo).toBe(5);
-    expect(s.score).toBe(10 * 4 + 15);
   });
 
-  it('applies 2.0x multiplier at combo 10', () => {
+  it('applies 1.5x multiplier at combo 10', () => {
     let s = createScore();
-    for (let i = 0; i < 9; i++) s = recordCorrect(s, 0);
-    s = recordCorrect(s, 0); // combo 10 → 2.0x → 20
-    expect(s.combo).toBe(10);
-    // combo 1-4  → 10 each (4×10=40)
-    // combo 5-9  → 15 each (5×15=75)
-    // combo 10   → 20
-    expect(s.score).toBe(40 + 75 + 20);
+    for (let i = 0; i < 10; i++) s = recordJamoCorrect(s); // combo = 10
+    s = recordCorrect(s, 0); // 1.5x → round(10*1.5) = 15
+    expect(s.score).toBe(15);
+  });
+
+  it('applies 2.0x multiplier at combo 20', () => {
+    let s = createScore();
+    for (let i = 0; i < 20; i++) s = recordJamoCorrect(s); // combo = 20
+    s = recordCorrect(s, 0); // 2.0x → 20
+    expect(s.score).toBe(20);
   });
 
   it('scales points by syllableCount', () => {
     let s = createScore();
-    s = recordCorrect(s, 0, 3); // combo 1, 1.0x, 3 syllables → 30
+    s = recordJamoCorrect(s); // combo = 1, 1.0x
+    s = recordCorrect(s, 0, 3); // 3 syllables → 30
     expect(s.score).toBe(30);
   });
 
   it('combines syllableCount and combo multiplier', () => {
     let s = createScore();
-    for (let i = 0; i < 4; i++) s = recordCorrect(s, 0, 1);
-    s = recordCorrect(s, 0, 4); // combo 5, 1.5x, 4 syllables → round(10*4*1.5)=60
-    expect(s.combo).toBe(5);
-    expect(s.score).toBe(40 + 60);
-  });
-
-  it('updates maxCombo', () => {
-    let s = createScore();
-    s = recordCorrect(s);
-    s = recordCorrect(s);
-    s = recordMiss(s);
-    s = recordCorrect(s);
-    expect(s.combo).toBe(1);
-    expect(s.maxCombo).toBe(2);
+    for (let i = 0; i < 10; i++) s = recordJamoCorrect(s); // combo = 10, 1.5x
+    s = recordCorrect(s, 0, 4); // round(10*4*1.5) = 60
+    expect(s.score).toBe(60);
   });
 
   it('adds speed bonus based on CPM', () => {
     let s = createScore();
+    s = recordJamoCorrect(s); // combo = 1, 1.0x
     s = recordCorrect(s, 200); // 10*1.0 + speedBonus(200)=10 → 20
     expect(s.score).toBe(20);
+  });
+
+  it('increments correctSyllables', () => {
+    let s = createScore();
+    s = recordJamoCorrect(s);
+    s = recordCorrect(s);
+    s = recordJamoCorrect(s);
+    s = recordCorrect(s);
+    expect(s.correctSyllables).toBe(2);
   });
 });
 
 describe('recordMiss', () => {
   it('resets combo to 0', () => {
     let s = createScore();
-    s = recordCorrect(s);
-    s = recordCorrect(s);
+    s = recordJamoCorrect(s);
+    s = recordJamoCorrect(s);
     s = recordMiss(s);
     expect(s.combo).toBe(0);
   });
 
   it('does not change score', () => {
     let s = createScore();
+    s = recordJamoCorrect(s);
     s = recordCorrect(s); // score = 10
     const scoreBefore = s.score;
     s = recordMiss(s);

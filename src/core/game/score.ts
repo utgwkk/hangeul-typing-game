@@ -1,11 +1,11 @@
 /** 1 音節あたりの基本ポイント。 */
 const BASE_POINTS = 10;
 
-/** コンボ倍率のしきい値。 */
-const COMBO_TIER_MAX = 30;
-const COMBO_TIER_SUPER = 20;
-const COMBO_TIER_HIGH = 10;
-const COMBO_TIER_MID = 5;
+/** コンボ倍率のしきい値。字母単位でカウントするため旧値の倍。 */
+const COMBO_TIER_MAX = 60;
+const COMBO_TIER_SUPER = 40;
+const COMBO_TIER_HIGH = 20;
+const COMBO_TIER_MID = 10;
 
 /** 速度ボーナス: CPM が 100 増えるごとに +5 pt。 */
 const SPEED_BONUS_PER_100_CPM = 5;
@@ -91,21 +91,31 @@ export function startTimer(
 }
 
 /**
- * 正解音節を記録し、コンボ・スコアを更新する。
+ * 字母を 1 つ正しく入力したときにコンボを +1 する。スコアは変化しない。
+ * 入力のたびに呼び、問題完了時は別途 recordCorrect でスコアを加算する。
+ */
+export function recordJamoCorrect(state: ScoreState): ScoreState {
+  const newCombo = state.combo + 1;
+  return {
+    ...state,
+    combo: newCombo,
+    maxCombo: Math.max(state.maxCombo, newCombo),
+  };
+}
+
+/**
+ * 問題完了時にスコアを加算する。コンボは変化しない（recordJamoCorrect で更新済み）。
  *
  * @param state 現在のスコア状態
  * @param cpm 現在の CPM（速度ボーナス算出に使用、省略時は 0）
  * @param syllableCount 完了した問題の音節数（省略時は 1）
  */
 export function recordCorrect(state: ScoreState, cpm: number = 0, syllableCount: number = 1): ScoreState {
-  const newCombo = state.combo + 1;
-  const multiplier = comboMultiplier(newCombo);
+  const multiplier = comboMultiplier(state.combo);
   const points = Math.round(BASE_POINTS * syllableCount * multiplier) + speedBonus(cpm);
   return {
     ...state,
     score: state.score + points,
-    combo: newCombo,
-    maxCombo: Math.max(state.maxCombo, newCombo),
     correctSyllables: state.correctSyllables + 1,
   };
 }
