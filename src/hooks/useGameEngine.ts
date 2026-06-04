@@ -11,13 +11,12 @@ import {
   type SyllableState,
 } from '../core/hangul/automaton'
 import { keyToJamo } from '../core/hangul/layout'
-import { computeNextKey } from './internal/computeNextKey'
+import { computeNextKey, computeNextJamo } from './internal/computeNextKey'
 import {
   createEngine,
   currentPrompt as engineCurrentPrompt,
   computeCharStatuses,
   isQuestionComplete,
-  hasWrongInput,
   advanceQuestion,
   type EngineState,
   type CharStatus,
@@ -52,6 +51,7 @@ interface GameState {
   stats: StatsState
   score: ScoreState
   comboExtension: ComboExtension | null
+  isWrong: boolean
 }
 
 const IDLE_STATE: GameState = {
@@ -61,6 +61,7 @@ const IDLE_STATE: GameState = {
   stats: createStats(),
   score: createScore(),
   comboExtension: null,
+  isWrong: false,
 }
 
 export interface UseGameEngineReturn {
@@ -130,11 +131,35 @@ export function useGameEngine(): UseGameEngineReturn {
         if (!prompt) return prev
 
         if (isBackspace) {
-          return { ...prev, automaton: automatonBackspace(prev.automaton) }
+          return { ...prev, automaton: automatonBackspace(prev.automaton), isWrong: false }
         }
 
-        if (hasWrongInput(prompt.text, prev.automaton.committed)) {
-          return prev
+        // Validate input against the next expected jamo/character.
+        const committedLen = Array.from(prev.automaton.committed).length
+        const promptChars = Array.from(prompt.text)
+        const targetChar = committedLen < promptChars.length ? promptChars[committedLen] : null
+
+        let inputIsCorrect: boolean
+        if (jamo !== null) {
+          if (targetChar && /[가-힣]/.test(targetChar)) {
+            const expectedJamo = computeNextJamo(prompt, prev.automaton)
+            // If expectedJamo is null (syllable complete, etc.) allow through as a safety valve.
+            inputIsCorrect = expectedJamo === null || jamo === expectedJamo
+          } else {
+            // Target is non-Hangul but user pressed a jamo key.
+            inputIsCorrect = false
+          }
+        } else {
+          // Space or other literal: must match the target character exactly.
+          inputIsCorrect = targetChar !== null && e.key === targetChar
+        }
+
+        const newStats = recordKeystroke(prev.stats, inputIsCorrect)
+        let newScore = startScoreTimer(prev.score)
+
+        if (!inputIsCorrect) {
+          newScore = recordMiss(newScore)
+          return { ...prev, stats: newStats, score: newScore, isWrong: true }
         }
 
         let newAutomaton: AutomatonState
@@ -147,15 +172,6 @@ export function useGameEngine(): UseGameEngineReturn {
         const newComposing = renderSyllable(newAutomaton.current)
         const newCommitted = newAutomaton.committed
 
-        const isCorrect = !hasWrongInput(prompt.text, newCommitted)
-        let newStats = recordKeystroke(prev.stats, isCorrect)
-        let newScore = startScoreTimer(prev.score)
-
-        // Wrong committed char → reset combo.
-        if (!isCorrect) {
-          newScore = recordMiss(newScore)
-        }
-
         // Question complete?
         if (isQuestionComplete(prompt.text, newCommitted, newComposing)) {
           const committed = automatonCommit(newAutomaton)
@@ -166,7 +182,7 @@ export function useGameEngine(): UseGameEngineReturn {
           if (ext && newScore.combo % ext.interval === 0) {
             newScore = extendTime(newScore, ext.bonusSeconds)
           }
-          newStats = recordSyllable(newStats, syllableCount)
+          const newStats2 = recordSyllable(newStats, syllableCount)
           const newEngine = advanceQuestion(prev.engine)
 
           const nextPhase: GamePhase = newEngine.finished ? 'finished' : 'playing'
@@ -174,13 +190,14 @@ export function useGameEngine(): UseGameEngineReturn {
             phase: nextPhase,
             engine: newEngine,
             automaton: nextPhase === 'playing' ? createInitialState() : committed,
-            stats: newStats,
+            stats: newStats2,
             score: newScore,
             comboExtension: prev.comboExtension,
+            isWrong: false,
           }
         }
 
-        return { ...prev, automaton: newAutomaton, stats: newStats, score: newScore }
+        return { ...prev, automaton: newAutomaton, stats: newStats, score: newScore, isWrong: false }
       })
     }
 
@@ -199,6 +216,7 @@ export function useGameEngine(): UseGameEngineReturn {
       stats: createStats(),
       score: createScore(timeLimitSeconds),
       comboExtension: config.comboExtension,
+      isWrong: false,
     })
     setNow(Date.now())
   }, [])
@@ -217,7 +235,7 @@ export function useGameEngine(): UseGameEngineReturn {
     ? computeCharStatuses(prompt.text, committed, composing)
     : []
 
-  const isWrong = prompt ? hasWrongInput(prompt.text, committed) : false
+  const isWrong = gameState.isWrong
   const { code: nextKeyCode, shift: nextKeyShift } = computeNextKey(prompt, automaton)
   const statsSnapshot = computeStats(stats, now)
   const timer = getTimer(score, now)
